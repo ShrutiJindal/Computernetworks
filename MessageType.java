@@ -19,6 +19,7 @@ public class MessageType {
 	public void setMessagePayload(byte[] messagePayload) {
 		this.messagePayload = messagePayload;
 	}
+	
 
 	// getter functions
 	public String getMsgType() {
