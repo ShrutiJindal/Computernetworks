@@ -7,20 +7,31 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerConnect implements Runnable {
 	
 	private ServerSocket serverSocket;
+	private String myHostName;
+	private int myListeningPort;
+	private Map<Integer, ReadConfig> peer_map;
+	private ReadConfig myCommonConfig;
+	private Integer myPeerID;
+	private ConcurrentHashMap<Integer, ClientConnect> clientConnections_map;
 	
-	public ServerConnect(String hostName, int port, TCPConnect myConnection) throws SocketException 
-	{
+	public ServerConnect(ReadConfig myCommonConfig, Map<Integer, ReadConfig> peer_map, int myPeerID) throws SocketException 
+	{		
+		this.myListeningPort = peer_map.get(myPeerID).getListeningPort();
+		this.peer_map = peer_map;
 		try {
-			serverSocket = new ServerSocket(port);
+			serverSocket = new ServerSocket(myListeningPort);
 			serverSocket.setSoTimeout(10000);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//this.setUpConnectionWithPeers();
 	}
 
 	@Override
@@ -53,4 +64,32 @@ public class ServerConnect implements Runnable {
 	         }
 	      }
 	}
+	
+	
+////	public void setUpConnectionWithPeers()
+////	{
+////		for(Integer peer_Id : this.peer_map.keySet())
+////		{
+////			if(peer_Id < myPeerID)
+////			{
+////				System.out.println("Creating a client for " + myPeerID);
+////
+////				ClientConnect newClient = new ClientConnect(this.peer_map.get(peer_Id).getHostName(),
+////															this.peer_map.get(peer_Id).getListeningPort());
+////				MessageType aMessageHandler = new MessageType(newClient, this);
+////				(new Thread(aMessageHandler)).start();
+//////				 this.peerConnectionMap.put(peer_Id, newClient);
+////			}
+////		}
+//	}
+//	
+//	public void sendData(int peer_Id, byte[] data)
+//	{
+//		if(clientConnections_map.containsKey(peer_Id))
+//		{
+//			ClientConnect client_obj = clientConnections_map.get(peer_Id);
+//			ClientConnect.sendDataToClient(data);
+//		}
+//			
+//	}
 }

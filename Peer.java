@@ -63,8 +63,12 @@ public class Peer {
 		Map<Integer,ReadConfig> peer_map = p.getPeerInfo("PeerInfo.cfg");
 		System.out.println("Setting up peer");
 		if(peer_map.containsKey(myPeerID))
-			new TCPConnect(commonConfig, peer_map, myPeerID);
+		{
+			Thread serverThread = new Thread(new ServerConnect(commonConfig, peer_map, myPeerID));
+			serverThread.start();
+		}	
 		else
 			System.out.println("Peer Id doesn't exist");
+		
 	}
 }

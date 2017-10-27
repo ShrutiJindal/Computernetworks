@@ -10,7 +10,7 @@ public class ClientConnect implements Runnable {
 	private String serverName;
 	private int serverPort;
 	
-	public ClientConnect(String serverName, int serverPort, TCPConnect myConnection) 
+	public ClientConnect(String serverName, int serverPort) 
 	{
 		this.serverName = serverName;
 		this.serverPort = serverPort;
