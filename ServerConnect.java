@@ -43,15 +43,9 @@ public class ServerConnect implements Runnable {
 			throws InterruptedException, IOException {
 		this.myListeningPort = peer_map.get(myPeerID).getListeningPort();
 		this.peer_map = peer_map;
-		try {
-			serverSocket = new ServerSocket(myListeningPort);
-			serverSocket.setSoTimeout(10000);
-			Thread.sleep(50);
-		} catch (IOException e) {
-			
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		serverSocket = new ServerSocket(myListeningPort);
+		serverSocket.setSoTimeout(10000);
+		Thread.sleep(50);
 	}
 
 	/*
@@ -126,7 +120,7 @@ public class ServerConnect implements Runnable {
 	public void sendData(Socket server ,int peer_Id) throws IOException {
 		if (clientConnections_map.containsKey(peer_Id)) {
 			String file_name  = new ReadConfig().getFileName();
-			FileResponse f = new FileResponse(server, file_name , peer_Id);
+//			FileResponse f = new FileResponse(server, file_name , peer_Id);
 		}
 
 	}
@@ -142,8 +136,8 @@ public class ServerConnect implements Runnable {
 	public void sendHandshakeMessage(int peer_Id, Socket server) throws InterruptedException, IOException {
 		HandshakeMsg handshakeMsg = new HandshakeMsg();
 		ByteArrayOutputStream handshakeHeader = Utilities.getStreamHandle();
-		handshakeHeader.write(handshakeMsg.getHANDSHAKE_HEADER().getBytes());
-		handshakeHeader.write(handshakeMsg.getZerobits()); // 10 bytes zero bits
+//		handshakeHeader.write(handshakeMsg.getHANDSHAKE_HEADER().getBytes());
+//		handshakeHeader.write(handshakeMsg.getZerobits()); // 10 bytes zero bits
 		handshakeHeader.write(Utilities.getBytes(peer_Id));
 		byte[] fullHandshakeMessage = handshakeHeader.toByteArray();
 		Utilities.returnStreamHandle();
