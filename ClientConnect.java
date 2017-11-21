@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 
@@ -36,8 +37,10 @@ public class ClientConnect implements Runnable {
 
 		try {
 			System.out.println("Connecting to " + serverName + " on port " + serverPort);
-			Socket client = new Socket(serverName, serverPort);
-
+			Socket client = new Socket();
+			
+			
+			client.connect(new InetSocketAddress(serverName, serverPort), 10000);
 			System.out.println("Just connected to " + client.getRemoteSocketAddress());
 			OutputStream outToServer = client.getOutputStream();
 			DataOutputStream out = new DataOutputStream(outToServer);
@@ -47,14 +50,14 @@ public class ClientConnect implements Runnable {
 			DataInputStream in = new DataInputStream(inFromServer);
 
 			System.out.println("Server says " + in.readUTF());
-			sendHandShakeMsg(client);
+//			sendHandShakeMsg(client);
 			client.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (InterruptedException e) {
+		}/* catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} */
 	}
 
 	// Sends a Handshake message to server 

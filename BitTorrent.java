@@ -7,7 +7,7 @@ public class BitTorrent {
 	 * @param args
 	 */
 	
-	//Passing the perrId as argument
+	//Passing the peerId as argument
 	//Reading Config files
 	// Initiating the TCP Connection
 	public static void main(String []args) throws IOException, InterruptedException 
@@ -21,9 +21,22 @@ public class BitTorrent {
 		{
 			Thread serverThread = new Thread(new ServerConnect(commonConfig, peer_map, myPeerID));
 			serverThread.start();
+			for(Integer a : peer_map.keySet())
+			{
+				if(a < myPeerID)
+				{
+					System.out.println("Creating a client for " + myPeerID);
+
+					ClientConnect newClient = new ClientConnect(peer_map.get(a).getHostName(),
+							peer_map.get(a).getListeningPort(), myPeerID);
+					//just one connection , pass connection object instead of myPerrid to connect to all
+
+				}
+			}
 		}	
 		else
 			System.out.println("Peer Id doesn't exist");
+		
 		
 	}
 
