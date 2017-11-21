@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-
 //Peer requests from other peers
 
 public class ClientConnect implements Runnable {
@@ -27,40 +26,49 @@ public class ClientConnect implements Runnable {
 		this.peer_Id = peer_Id;
 	}
 
-	/* Responds to inital TCP connnection request from server and send an handshake message after successful TCP connection establishment */
-	/* (non-Javadoc)
+	/*
+	 * Responds to inital TCP connnection request from server and send an
+	 * handshake message after successful TCP connection establishment
+	 */
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		while (true) {
+			try {
+				System.out.println("Connecting to " + serverName + " on port " + serverPort);
+				Socket client = new Socket();
 
-		try {
-			System.out.println("Connecting to " + serverName + " on port " + serverPort);
-			Socket client = new Socket();
-			
-			
-			client.connect(new InetSocketAddress(serverName, serverPort), 10000);
-			System.out.println("Just connected to " + client.getRemoteSocketAddress());
-			OutputStream outToServer = client.getOutputStream();
-			DataOutputStream out = new DataOutputStream(outToServer);
+				client.connect(new InetSocketAddress(serverName, serverPort), 10000);
+				System.out.println("Just connected to " + client.getRemoteSocketAddress());
+				OutputStream outToServer = client.getOutputStream();
+				DataOutputStream out = new DataOutputStream(outToServer);
 
-			out.writeUTF("Hello from " + client.getLocalSocketAddress());
-			InputStream inFromServer = client.getInputStream();
-			DataInputStream in = new DataInputStream(inFromServer);
+				out.writeUTF("Hello from " + client.getLocalSocketAddress());
+				InputStream inFromServer = client.getInputStream();
+				DataInputStream in = new DataInputStream(inFromServer);
 
-			System.out.println("Server says " + in.readUTF());
-//			sendHandShakeMsg(client);
-			client.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}/* catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} */
+				System.out.println("Server says " + in.readUTF());
+				// sendHandShakeMsg(client);
+				client.close();
+			} catch (IOException e) {
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e1) {
+					/* ignore */}
+				e.printStackTrace();
+			} /*
+				 * catch (InterruptedException e) { // TODO Auto-generated catch
+				 * block e.printStackTrace(); }
+				 */
+		}
 	}
 
-	// Sends a Handshake message to server 
+	// Sends a Handshake message to server
 	// Writes the Handshake Message to the DataOutputstream
 	/**
 	 * @param client

@@ -46,7 +46,9 @@ public class ServerConnect implements Runnable {
 		try {
 			serverSocket = new ServerSocket(myListeningPort);
 			serverSocket.setSoTimeout(10000);
+			Thread.sleep(50);
 		} catch (IOException e) {
+			
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
