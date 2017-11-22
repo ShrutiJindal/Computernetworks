@@ -51,7 +51,8 @@ public class ServerConnect implements Runnable {
 //		serverSocket = new ServerSocket(myListeningPort);
 //		serverSocket.setSoTimeout(10000);
 		
-		
+		this.myListeningPort = peer_map.get(myPeerID).getListeningPort();
+		this.myHostName = peer_map.get(myPeerID).getHostName();
 		System.out.println("IM IN THE SERVER CONNECTION CONSTRUCTOR :: hostname = " + myHostName + " port = " + myListeningPort);
 		this.serverSocket = new ServerSocket(myListeningPort, 0, InetAddress.getByName(myHostName.trim()));
 		this.serverSocket.setSoTimeout(ACCEPT_TIMEOUT);
