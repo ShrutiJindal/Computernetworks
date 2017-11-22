@@ -2,6 +2,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -30,6 +31,7 @@ public class ServerConnect implements Runnable {
 
 	private ConcurrentHashMap<Integer, ClientConnect> clientConnections_map;
 
+	private static final int ACCEPT_TIMEOUT = 100000;
 	/**
 	 * @param myCommonConfig
 	 * @param peer_map
@@ -41,11 +43,26 @@ public class ServerConnect implements Runnable {
 	// Initializes the variables to start the socket
 	public ServerConnect(ReadConfig myCommonConfig, Map<Integer, ReadConfig> peer_map, int myPeerID)
 			throws InterruptedException, IOException {
-		this.myListeningPort = peer_map.get(myPeerID).getListeningPort();
-		this.peer_map = peer_map;
-		serverSocket = new ServerSocket(myListeningPort);
-		serverSocket.setSoTimeout(10000);
-		Thread.sleep(50);
+		
+//		this.myListeningPort = peer_map.get(myPeerID).getListeningPort();
+//		this.peer_map = peer_map;
+//		System.out.println("Peerid "+ myPeerID+ "Listening port" + myListeningPort);
+//		
+//		serverSocket = new ServerSocket(myListeningPort);
+//		serverSocket.setSoTimeout(10000);
+		
+		
+		System.out.println("IM IN THE SERVER CONNECTION CONSTRUCTOR :: hostname = " + myHostName + " port = " + myListeningPort);
+		this.serverSocket = new ServerSocket(myListeningPort, 0, InetAddress.getByName(myHostName.trim()));
+		this.serverSocket.setSoTimeout(ACCEPT_TIMEOUT);
+		
+		try{
+			Thread.sleep(50);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		System.out.println("Server socket ready to run");
 	}
 
 	/*
@@ -68,34 +85,64 @@ public class ServerConnect implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 
-		while (true) {
-			try {
-				System.out.println("Waiting for client on port ");
-
-				Socket server = this.serverSocket.accept();
-
-				// Connect to client and send data
-
-				System.out.println("Just connected to " + server.getRemoteSocketAddress());
-				DataInputStream in = new DataInputStream(server.getInputStream());
-
-				System.out.println(in.readUTF());
-				DataOutputStream out = new DataOutputStream(server.getOutputStream());
-				out.writeUTF("Thank you for connecting to " + server.getLocalSocketAddress() + "\nGoodbye!");
-				setUpConnectionWithPeers(server);
-	       
-				 
-				// Send data if client doesn't have the file
-				server.close();
-
-			} catch (SocketTimeoutException s) {
-				System.out.println("Socket timed out!");
-				break;
-			} catch (IOException e) {
-				e.printStackTrace();
-				break;
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+//		while (true) {
+//			try {
+//				System.out.println("Waiting for client on port ");
+//
+//				Socket server = this.serverSocket.accept();
+//
+//				System.out.println("Connected!!!....................... ");
+//				// Connect to client and send data
+//
+//				System.out.println("Just connected to " + server.getRemoteSocketAddress());
+//				DataInputStream in = new DataInputStream(server.getInputStream());
+//
+//				System.out.println(in.readUTF());
+//				DataOutputStream out = new DataOutputStream(server.getOutputStream());
+//				out.writeUTF("Thank you for connecting to " + server.getLocalSocketAddress() + "\nGoodbye!");
+//				setUpConnectionWithPeers(server);
+//	       
+//				 
+//				// Send data if client doesn't have the file
+//				server.close();
+//
+//			} catch (SocketTimeoutException s) {
+//				System.out.println("Socket timed out!");
+//				break;
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				break;
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+		
+		
+		
+		while(true)
+		{
+			Socket ClientSocket = null;
+			// wait for connections forever
+			try
+			{
+				ClientSocket = this.serverSocket.accept();
+				(new Thread(new ClientConnect(myHostName,myListeningPort,myPeerID))).start();
+				//(new Thread(new MessageHandler(new ClientConnection(ClientSocket, myConnection), myConnection))).start();
+				System.out.println("Server has been requested by a client");
+			}
+			catch(InterruptedIOException iioex)
+			{
+				
+					try
+					{
+						this.serverSocket.close();
+						break;
+					} catch (IOException e){}
+				}
+			
+			catch (IOException e)
+			{
 				e.printStackTrace();
 			}
 		}

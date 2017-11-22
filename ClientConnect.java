@@ -14,6 +14,8 @@ public class ClientConnect implements Runnable {
 	private String serverName;
 	private int serverPort;
 	private int peer_Id;
+	private static final int TIMEOUT = 5000;    //5 seconds
+	private Socket clientSocket;
 
 	/**
 	 * @param serverName
@@ -24,7 +26,29 @@ public class ClientConnect implements Runnable {
 		this.serverName = serverName;
 		this.serverPort = serverPort;
 		this.peer_Id = peer_Id;
-	}
+		
+		
+		this.clientSocket = new Socket();
+		while(true)
+		{
+			try
+			{
+				this.clientSocket.connect(new InetSocketAddress(this.serverName, this.serverPort), TIMEOUT);
+
+				
+				break;
+			}
+			catch (IOException e)
+			{
+
+				try{Thread.sleep(500);} catch (InterruptedException e1){/*ignore*/}
+			}
+		}
+		
+		System.out.println("Client: connected to server now...");
+
+
+		}
 
 	/*
 	 * Responds to inital TCP connnection request from server and send an handshake
@@ -39,42 +63,47 @@ public class ClientConnect implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		System.out.println("Connecting to " + serverName + " on port " + serverPort);
-		Socket client = new Socket();
 		
-		while(true)
-		{
-			
-		try {
-			
-			client.connect(new InetSocketAddress(serverName, serverPort), 5000);
-			
-			System.out.println("Just connected to " + client.getRemoteSocketAddress());
-			OutputStream outToServer = client.getOutputStream();
-			DataOutputStream out = new DataOutputStream(outToServer);
-
-			out.writeUTF("Hello from " + client.getLocalSocketAddress());
-			InputStream inFromServer = client.getInputStream();
-			DataInputStream in = new DataInputStream(inFromServer);
-
-			System.out.println("Server says " + in.readUTF());
-			// sendHandShakeMsg(client);
-			client.close();
-			
-		} catch (IOException e) 
-		{
-			try 
-			{
-				Thread.sleep(500);
-			} catch (InterruptedException e1) {
-				/* ignore */}
-			e.printStackTrace();
-		} /*
+		
+		System.out.println("Inside ClientConnect run ---------    Connected in the constructor");
+//		
+//		System.out.println("Connecting to " + serverName + " on port " + serverPort + "Client Peer" + peer_Id);
+//		Socket client = new Socket();
+//		
+//	
+//		try {
+//			
+//			System.out.println("new Socket");
+//			 //client = new Socket(serverName, serverPort);
+//			client.connect(new InetSocketAddress(serverName, serverPort), 10);
+//			
+//			System.out.println("Just connected to " + client.getRemoteSocketAddress());
+//			OutputStream outToServer = client.getOutputStream();
+//			DataOutputStream out = new DataOutputStream(outToServer);
+//
+//			out.writeUTF("Hello from " + client.getLocalSocketAddress());
+//			InputStream inFromServer = client.getInputStream();
+//			DataInputStream in = new DataInputStream(inFromServer);
+//
+//			System.out.println("Server says " + in.readUTF());
+//			// sendHandShakeMsg(client);
+//			client.close();
+//			
+//		} catch (IOException e) 
+//		{
+//			try 
+//			{
+//				Thread.sleep(500);
+//			} catch (InterruptedException e1) {
+//				/* ignore */}
+			//e.printStackTrace();
+		//} 
+		/*
 			 * catch (InterruptedException e) { // TODO Auto-generated catch block
 			 * e.printStackTrace(); }
 			 */
 	}
-	}
+	
 
 	// Sends a Handshake message to server
 	// Writes the Handshake Message to the DataOutputstream

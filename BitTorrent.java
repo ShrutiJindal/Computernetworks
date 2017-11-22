@@ -31,7 +31,7 @@ public class BitTorrent {
 							peer_map.get(a).getListeningPort(), myPeerID);
 					//just one connection , pass connection object instead of myPerrid to connect to all
 					
-					(new Thread(newClient)).start();
+					
 				
 
 				}
